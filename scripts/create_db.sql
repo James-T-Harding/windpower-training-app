@@ -9,7 +9,6 @@ BEGIN TRANSACTION;
 -- Table: locations
 CREATE TABLE locations (id INTEGER PRIMARY KEY NOT NULL, latitude REAL, longitude REAL, name TEXT, region TEXT);
 
-CREATE TABLE locations (id INTEGER PRIMARY KEY NOT NULL, latitude REAL, longitude REAL, name TEXT, region TEXT);
 INSERT INTO locations (id, latitude, longitude, name, region) VALUES (996, 56.69936, -4.19345, 'Loch Rannoch', NULL);
 INSERT INTO locations (id, latitude, longitude, name, region) VALUES (3002, 60.749, -0.854, 'Baltasound', 'os');
 INSERT INTO locations (id, latitude, longitude, name, region) VALUES (3005, 60.139, -1.183, 'Lerwick (S. Screen)', 'os');

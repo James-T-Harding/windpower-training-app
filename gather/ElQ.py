@@ -1,13 +1,15 @@
 import urllib.request as req
 import json
 
+from keys import load_keys
+
 KEYFILE = "keys/elexon.json"
 
 
 def get_power(date: str):
-    key = get_key()
+    keys = load_keys()
 
-    querystring = f"https://api.bmreports.com/BMRS/B1620/v1?APIKey={key}&ServiceType=csv&SettlementDate=" \
+    querystring = f"https://api.bmreports.com/BMRS/B1620/v1?APIKey={keys.elexon_key}&ServiceType=csv&SettlementDate=" \
                   f"{date}&Period=* "
 
     file = req.urlopen(querystring).read().decode()

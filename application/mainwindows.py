@@ -2,7 +2,7 @@ from gather.write import Converter
 
 from application.uncontained import EntryBox
 from utility import export
-from gather import ElQ, MeQ
+from keys import save_keys, load_keys
 from threading import Thread
 from tkinter import *
 
@@ -86,24 +86,15 @@ class KeyAdjustor(Toplevel):
 
         self.title("Key Supplier")
 
-        try:
-            self.wind = StringVar(value=MeQ.get_key())
+        keys = load_keys()
+        self.wind = StringVar(value=keys.met_key)
+        self.power = StringVar(value=keys.elexon_key)
 
-        except FileNotFoundError:
-            self.wind = StringVar()
-
-        try:
-            self.power = StringVar(value=ElQ.get_key())
-
-        except FileNotFoundError:
-            self.wind = StringVar()
-
-        EntryBox(self, 0, "Wind Key", var=self.wind)
-        EntryBox(self, 1, "Power Key", var=self.power)
+        EntryBox(self, 0, "Met Key", var=self.wind)
+        EntryBox(self, 1, "Elexon Key", var=self.power)
 
         button = Button(self, text="Save", command=self.save_keys)
         button.grid(row=2, column=0, sticky="w")
 
     def save_keys(self):
-        MeQ.set_key(self.wind.get())
-        ElQ.set_key(self.power.get())
+        save_keys(self.wind.get(), self.power.get())

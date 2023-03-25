@@ -1,4 +1,6 @@
 from sqlite3 import *
+from database.constants import DATABASE_NAME
+from os import sep
 
 
 def run(path):
@@ -13,4 +15,4 @@ def run(path):
 
 
 if __name__ == "__main__":
-    run("../NationalWind.db")
+    run(sep.join(['..', DATABASE_NAME]))
