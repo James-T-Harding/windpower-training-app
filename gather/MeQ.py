@@ -1,10 +1,8 @@
-import urllib.request as req
-
 from requests import get
 
-from keys import load_keys
+from gather.errors import MissingAPIKeyError
+from keys.file import load_key
 from utility.dtypes import MetData
-import json
 
 OBS = "wxobs"
 FCS = "wxfcs"
@@ -14,11 +12,15 @@ HOUR3 = "3hourly"
 DAY = "daily"
 
 
-def query(forecast_type, resolution):
+def query(forecast_type: str, resolution: str) -> MetData:
     url = f"http://datapoint.metoffice.gov.uk/public/data/val/{forecast_type}/all/json/all"
-    keys = load_keys()
+    met_key = load_key("met_key")
+
+    if not met_key:
+        raise MissingAPIKeyError
+
     params = dict(
-        key=keys.met_key,
+        key=met_key,
         res=resolution,
     )
 

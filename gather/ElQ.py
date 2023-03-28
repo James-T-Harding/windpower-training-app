@@ -1,13 +1,18 @@
 from requests import get
 
-from keys import load_keys
+from gather.errors import MissingAPIKeyError
+from keys.file import load_key
 
 
 def get_power(date: str):
-    keys = load_keys()
+    elexon_key = load_key("elexon_key")
+
+    if not elexon_key:
+        raise MissingAPIKeyError
+
     url = "https://api.bmreports.com/BMRS/B1620/v1"
     params = dict(
-        APIKey=keys.elexon_key,
+        APIKey=elexon_key,
         ServiceType="csv",
         SettlementDate=date,
         Period="*",
