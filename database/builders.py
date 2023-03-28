@@ -17,11 +17,14 @@ class Interact:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.end(commit=exc_type is None)
+        self.end(exc_type is None)
+
+    def commit(self):
+        self._db.commit()
 
     def end(self, commit=True):
         if commit:
-            self._db.commit()
+            self.commit()
         self._db.close()
 
     def insert_timestamps(self, start: datetime, end: datetime, increment: timedelta):
@@ -90,6 +93,3 @@ class PowerAdder(Interact):
                 [reading, dt]
             )
 
-    @cached_property
-    def reading_gap_dates(self) -> set[date]:
-        return {timestamp.date() for timestamp, in self._cursor.execute("SELECT timestamp FROM power_reading_gaps")}

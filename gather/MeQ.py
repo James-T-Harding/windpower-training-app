@@ -1,5 +1,7 @@
 import urllib.request as req
 
+from requests import get
+
 from keys import load_keys
 from utility.dtypes import MetData
 import json
@@ -13,13 +15,14 @@ DAY = "daily"
 
 
 def query(forecast_type, resolution):
+    url = f"http://datapoint.metoffice.gov.uk/public/data/val/{forecast_type}/all/json/all"
     keys = load_keys()
-    query_text = (
-        f"http://datapoint.metoffice.gov.uk/public/data/val/{forecast_type}/all/json/all?"
-        f"key={keys.met_key}&res={resolution}"
+    params = dict(
+        key=keys.met_key,
+        res=resolution,
     )
 
-    response = req.urlopen(query_text).read().decode()
-    data = json.loads(response)
+    response = get(url, params)
+    response.raise_for_status()
 
-    return MetData(data)
+    return MetData(response.json())

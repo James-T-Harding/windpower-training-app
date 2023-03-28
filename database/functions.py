@@ -1,4 +1,4 @@
-from sqlite3 import connect
+from sqlite3 import connect, PARSE_DECLTYPES
 
 from .constants import DATABASE_NAME
 from.sql import GET_WIND_SPEEDS_FOR_TIME_ID
@@ -6,7 +6,7 @@ from.sql import GET_WIND_SPEEDS_FOR_TIME_ID
 
 def with_connection(func):
     def connected_function(*args, **kwargs):
-        with connect(DATABASE_NAME) as conn:
+        with connect(DATABASE_NAME, detect_types=PARSE_DECLTYPES) as conn:
             output = func(conn.cursor(), *args, **kwargs)
         return output
 
@@ -34,3 +34,8 @@ def even(cursor, t_id, predictions=False):
 @with_connection
 def powers(cursor):
     return dict(cursor.execute("SELECT time_id, reading FROM readings"))
+
+
+@with_connection
+def reading_gap_dates(cursor):
+    return {timestamp.date() for timestamp, in cursor.execute("SELECT timestamp FROM power_reading_gaps")}

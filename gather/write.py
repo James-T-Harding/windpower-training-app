@@ -1,3 +1,4 @@
+from database.functions import reading_gap_dates
 from gather.ElQ import get_power as get_power_readings
 from gather.MeQ import HOUR, HOUR3, OBS, FCS, query as get_met_data
 from database.builders import WindAdder, PowerAdder
@@ -22,14 +23,18 @@ class Converter:
         self.print = printf
 
     def add_observations(self):
+        self.print("Retrieving met data:")
         data = get_met_data(OBS, HOUR)
-        base = data.dataDate - timedelta(days=1, hours=1)
+        self.print("Data retrieved successfully. Adding to database...")
+
+        base = data.dataDate - timedelta(days=1, hours=2)
         inc = timedelta(minutes=30)
 
         with WindAdder() as cursor:
             cursor.insert_timestamps(base + inc, data.dataDate, inc)
             cursor.add_data(data)
 
+        self.print("Met data added successfully.")
         create_log(data)
 
     def add_predictions(self):
@@ -43,7 +48,12 @@ class Converter:
             cursor.add_data(data)
 
     def add_power_readings(self):
+        dates = reading_gap_dates()
+        self.print(f"Retrieving Elexon readings for {', '.join(map(str, dates))}")
+
         with PowerAdder() as adder:
-            for date in adder.reading_gap_dates:
+            for date in dates:
                 power_data = get_power_readings(date.strftime("%Y-%m-%d"))
                 adder.add_day(date, power_data)
+                adder.commit()
+                self.print(f"Readings for {date} added.")
